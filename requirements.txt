@@ -1,0 +1,9 @@
+streamlit
+pandas
+plotly
+pymysql
+openpyxl
+matplotlib
+reportlab
+arabic-reshaper
+python-bidi
