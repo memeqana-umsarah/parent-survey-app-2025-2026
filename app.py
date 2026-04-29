@@ -45,6 +45,7 @@ except Exception:
 # إعداد قاعدة البيانات
 # =========================
 import os
+import pymysql
 
 DB_CONFIG = {
     "host": os.getenv("MYSQLHOST"),
@@ -52,7 +53,6 @@ DB_CONFIG = {
     "password": os.getenv("MYSQLPASSWORD"),
     "database": os.getenv("MYSQLDATABASE"),
     "port": int(os.getenv("MYSQLPORT")),
-    "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor
 }
 # =========================
