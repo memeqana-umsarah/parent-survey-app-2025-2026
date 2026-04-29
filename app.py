@@ -44,12 +44,14 @@ except Exception:
 # =========================
 # إعداد قاعدة البيانات
 # =========================
+import os
+
 DB_CONFIG = {
-    "host": os.getenv("MYSQLHOST", "monorail.proxy.rlwy.net"),
-    "user": os.getenv("MYSQLUSER", "root"),
-    "password": os.getenv("MYSQLPASSWORD", "xeHDmOjABhOodxCJgVIULVjmNnwkRSjm"),
-    "database": os.getenv("MYSQLDATABASE", "railway"),
-    "port": int(os.getenv("MYSQLPORT", "36010")),
+    "host": os.getenv("MYSQLHOST"),
+    "user": os.getenv("MYSQLUSER"),
+    "password": os.getenv("MYSQLPASSWORD"),
+    "database": os.getenv("MYSQLDATABASE"),
+    "port": int(os.getenv("MYSQLPORT")),
     "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor
 }
