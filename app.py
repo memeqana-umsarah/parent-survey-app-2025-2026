@@ -45,14 +45,14 @@ except Exception:
 # إعداد قاعدة البيانات
 # =========================
 DB_CONFIG = {
-    "host": "localhost",
+    "monorail.proxy.rlwy.net",
     "user": "root",
     "password": "1234",
-    "database": "parent_survey",
+    "database": "railway",
+    "port": 36010,
     "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor
 }
-
 # =========================
 # إعدادات التطبيق
 # =========================
