@@ -53,6 +53,7 @@ DB_CONFIG = {
     "password": os.getenv("MYSQLPASSWORD"),
     "database": os.getenv("MYSQLDATABASE") or os.getenv("MYSQL_DATABASE"),
     "port": int(os.getenv("MYSQLPORT", "3306")),
+    "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor
 }
 # =========================
