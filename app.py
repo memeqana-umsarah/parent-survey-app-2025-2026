@@ -61,7 +61,7 @@ DB_CONFIG = {
 APP_TITLE = "استبانة أولياء الأمور 2025-2026"
 SCHOOL_NAME = "مدارس الكلية العلمية الإسلامية"
 ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD = "mmmm"
+ADMIN_PASSWORD = "IEC@4321"
 
 LOGO_FILE = "logo.png"
 BANNER_FILE = "banner.png"
