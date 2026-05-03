@@ -48,7 +48,7 @@ import os
 import pymysql
 
 DB_CONFIG = {
-    "host": os.getenv("MYSQLHOST"),
+    "host": os.getenv("MYSQLHOST") or os.getenv("MYSQL_HOST"),
     "user": os.getenv("MYSQLUSER"),
     "password": os.getenv("MYSQLPASSWORD"),
     "database": os.getenv("MYSQLDATABASE") or os.getenv("MYSQL_DATABASE"),
