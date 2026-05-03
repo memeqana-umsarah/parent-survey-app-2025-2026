@@ -867,7 +867,7 @@ def count_table_rows(table_name):
 
     try:
         with conn.cursor() as cursor:
-            cursor.execute(f"SELECT COUNT(*) AS cnt FROM MYSQLDATABASE.{table_name}")
+            cursor.execute(f"SELECT COUNT(*) AS cnt FROM {table_name}")
             row = cursor.fetchone()
             return int(row["cnt"]) if row else 0
     except Exception:
@@ -1010,7 +1010,7 @@ def ensure_db_columns():
 
     try:
         with conn.cursor() as cursor:
-            cursor.execute("SHOW COLUMNS FROM MYSQLDATABASE.survey_answers")
+            cursor.execute("SHOW COLUMNS FROM survey_answers")
             answer_cols = {row["Field"] for row in cursor.fetchall()}
             answer_needed = {
                 "response_id": "INT NOT NULL",
@@ -1025,9 +1025,9 @@ def ensure_db_columns():
             }
             for col_name, col_def in answer_needed.items():
                 if col_name not in answer_cols:
-                    cursor.execute(f"ALTER TABLE MYSQLDATABASE.survey_answers ADD COLUMN {col_name} {col_def}")
+                    cursor.execute(f"ALTER TABLE survey_answers ADD COLUMN {col_name} {col_def}")
 
-            cursor.execute("SHOW COLUMNS FROM MYSQLDATABASE.survey_responses")
+            cursor.execute("SHOW COLUMNS FROM survey_responses")
             response_cols = {row["Field"] for row in cursor.fetchall()}
             response_needed = {
                 "is_bus_subscribed": "VARCHAR(10)",
@@ -1038,7 +1038,7 @@ def ensure_db_columns():
             }
             for col_name, col_def in response_needed.items():
                 if col_name not in response_cols:
-                    cursor.execute(f"ALTER TABLE MYSQLDATABASE.survey_responses ADD COLUMN {col_name} {col_def}")
+                    cursor.execute(f"ALTER TABLE survey_responses ADD COLUMN {col_name} {col_def}")
         conn.commit()
     except Exception:
         pass
@@ -1055,7 +1055,7 @@ def get_student(student_id, password):
             cursor.execute(
                 """
                 SELECT student_id, password, student_name, grade, school, survey_type
-                FROM MYSQLDATABASE.students
+                FROM students
                 WHERE student_id = %s AND password = %s
                 LIMIT 1
                 """,
@@ -1077,7 +1077,7 @@ def student_already_submitted(student_id):
     try:
         with conn.cursor() as cursor:
             cursor.execute(
-                "SELECT id FROM MYSQLDATABASE.survey_responses WHERE student_id = %s LIMIT 1",
+                "SELECT id FROM survey_responses WHERE student_id = %s LIMIT 1",
                 (str(student_id).strip(),),
             )
             result = cursor.fetchone()
@@ -1089,7 +1089,7 @@ def student_already_submitted(student_id):
         conn.close()
 
 def get_school_totals_df():
-    df = fetch_df("SELECT school, total_students FROM MYSQLDATABASE.school_totals")
+    df = fetch_df("SELECT school, total_students FROM school_totals")
     if df.empty:
         return pd.DataFrame(columns=["school", "total_students"])
 
@@ -1117,7 +1117,7 @@ def load_results():
                 overall_avg,
                 overall_pct,
                 created_at
-            FROM MYSQLDATABASE.survey_responses
+            FROM survey_responses
             ORDER BY id DESC
             """
         )
@@ -1165,8 +1165,8 @@ def load_answers():
                 COALESCE(a.question_text, '') AS question_text,
                 COALESCE(a.answer_text, '') AS answer_text,
                 COALESCE(a.answer_value, a.answer_score) AS answer_value
-            FROM MYSQLDATABASE.survey_answers a
-            LEFT JOIN MYSQLDATABASE.survey_responses r
+            FROM survey_answers a
+            LEFT JOIN survey_responses r
                 ON r.id = a.response_id
             ORDER BY a.id DESC
             """
@@ -1220,12 +1220,12 @@ def refresh_summary_tables():
 
     try:
         with conn.cursor() as cursor:
-            cursor.execute("DELETE FROM MYSQLDATABASE.school_axis_summary")
-            cursor.execute("DELETE FROM MYSQLDATABASE.school_summary")
+            cursor.execute("DELETE FROM school_axis_summary")
+            cursor.execute("DELETE FROM school_summary")
 
             cursor.execute(
                 """
-                INSERT INTO MYSQLDATABASE.school_summary (
+                INSERT INTO school_summary (
                     school, survey_type, responses_count, overall_avg, overall_pct, updated_at
                 )
                 SELECT
@@ -1235,7 +1235,7 @@ def refresh_summary_tables():
                     ROUND(AVG(COALESCE(overall_avg, 0)), 2) AS overall_avg,
                     ROUND(AVG(COALESCE(overall_pct, 0)), 2) AS overall_pct,
                     NOW() AS updated_at
-                FROM MYSQLDATABASE.survey_responses
+                FROM survey_responses
                 WHERE TRIM(COALESCE(school, '')) <> 'school'
                   AND TRIM(COALESCE(UPPER(survey_type), '')) <> 'SURVEY_TYPE'
                 GROUP BY COALESCE(NULLIF(TRIM(school), ''), 'غير محدد'),
@@ -1245,7 +1245,7 @@ def refresh_summary_tables():
 
             cursor.execute(
                 """
-                INSERT INTO MYSQLDATABASE.school_axis_summary (
+                INSERT INTO school_axis_summary (
                     school, survey_type, axis_name, responses_count, axis_avg, axis_pct, updated_at
                 )
                 SELECT
@@ -1256,8 +1256,8 @@ def refresh_summary_tables():
                     ROUND(AVG(COALESCE(a.answer_value, a.answer_score)), 2) AS axis_avg,
                     ROUND(AVG(COALESCE(a.answer_value, a.answer_score)) * 20, 2) AS axis_pct,
                     NOW() AS updated_at
-                FROM MYSQLDATABASE.survey_answers a
-                INNER JOIN MYSQLDATABASE.survey_responses r
+                FROM survey_answers a
+                INNER JOIN survey_responses r
                     ON r.id = a.response_id
                 WHERE COALESCE(a.answer_value, a.answer_score) IS NOT NULL
                   AND TRIM(COALESCE(r.school, '')) <> 'school'
@@ -1291,7 +1291,7 @@ def load_school_summary_table():
                 overall_avg,
                 overall_pct,
                 updated_at
-            FROM MYSQLDATABASE.school_summary
+            FROM school_summary
             ORDER BY school, survey_type
         """
         df = pd.read_sql(query, conn)
@@ -1331,7 +1331,7 @@ def load_school_axis_summary_table():
                 axis_avg,
                 axis_pct,
                 updated_at
-            FROM MYSQLDATABASE.school_axis_summary
+            FROM school_axis_summary
             ORDER BY school, survey_type, axis_name
         """
         df = pd.read_sql(query, conn)
@@ -1757,7 +1757,7 @@ def save_survey():
         with conn.cursor() as cursor:
             cursor.execute(
                 """
-                INSERT INTO MYSQLDATABASE.survey_responses (
+                INSERT INTO survey_responses (
                     student_id, student_name, grade, school, survey_type,
                     respondent_type, other_respondent_text, is_bus_subscribed, bus_number,
                     notes, overall_avg, overall_pct
@@ -1790,7 +1790,7 @@ def save_survey():
 
                     cursor.execute(
                         """
-                        INSERT INTO MYSQLDATABASE.survey_answers (
+                        INSERT INTO survey_answers (
                             response_id,
                             survey_type,
                             axis,
