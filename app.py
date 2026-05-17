@@ -624,7 +624,7 @@ def _set_matplotlib_arabic_font():
 
 def classification_text(pct):
     pct = 0 if pd.isna(pct) else float(pct)
-    if pct >= 85:
+    if pct >= 80:
         return "مرتفع"
     if pct >= 70:
         return "متوسط"
@@ -632,7 +632,7 @@ def classification_text(pct):
 
 def classification_color_name(pct):
     pct = 0 if pd.isna(pct) else float(pct)
-    if pct >= 85:
+    if pct >= 80:
         return "أخضر"
     if pct >= 70:
         return "أصفر"
@@ -640,7 +640,7 @@ def classification_color_name(pct):
 
 def classification_hex(pct):
     pct = 0 if pd.isna(pct) else float(pct)
-    if pct >= 85:
+    if pct >= 80:
         return "#2E7D32"
     if pct >= 70:
         return "#F9A825"
