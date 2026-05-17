@@ -370,7 +370,7 @@ div[role="radiogroup"] > label:nth-child(5):has(input:checked) {{
     margin-top: 10px;
     border: 1px solid rgba(11, 61, 145, 0.12);
     background: linear-gradient(180deg, #0F4FB9 0%, #0B3D91 100%);
-    color: white;
+    color: #111827 !important;
     box-shadow: 0 10px 18px rgba(11, 61, 145, 0.16);
     transition: all 0.2s ease;
 }}
